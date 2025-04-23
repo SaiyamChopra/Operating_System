@@ -32,7 +32,7 @@ int main() {
             }
         }
 
-        exec_seq[seq_index++] = smallest + 1; // Log execution
+        exec_seq[seq_index++] = smallest + 1;
 
         rt[smallest]--;
 
@@ -51,14 +51,14 @@ int main() {
     }
     printf("-> P%d -> %d\n", exec_seq[seq_index - 1], seq_index);
 
-    // Calculate and show results
-    printf("\nProcess\tArrival\tBurst\tCompletion\tTurnaround\tWaiting\n");
+    // Results
+    printf("\nProcess\tArrival\tBurst\tCompleted\tTAT\tWT\n");
     for (i = 0; i < n; i++) {
-        int tat = ct[i] - at[i];
-        int wt = tat - bt[i];
+        int tat = ct[i] - at[i];     // Turnaround Time
+        int wt = tat - bt[i];        // Waiting Time
         turnaround_time += tat;
         wait_time += wt;
-        printf("P%d\t%d\t%d\t%d\t\t%d\t\t%d\n", i + 1, at[i], bt[i], ct[i], tat, wt);
+        printf("P%d\t%d\t%d\t%d\t\t%d\t%d\n", i + 1, at[i], bt[i], ct[i], tat, wt);
     }
 
     avg_wait_time = (float)wait_time / n;
