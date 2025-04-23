@@ -2,12 +2,12 @@
 #define MAX 20
 
 int main() {
-    int bt[MAX], at[MAX], rt[MAX], ct[MAX]; // ct = completion time
+    int bt[MAX], at[MAX], rt[MAX], ct[MAX];
     int i, smallest, count = 0, time, n, end;
     int wait_time = 0, turnaround_time = 0;
     float avg_wait_time, avg_turnaround_time;
 
-    int exec_seq[MAX * 100]; // Store execution sequence
+    int exec_seq[MAX * 100]; // Execution sequence
     int seq_index = 0;
 
     printf("Enter number of processes: ");
@@ -32,8 +32,7 @@ int main() {
             }
         }
 
-        exec_seq[seq_index++] = smallest + 1;
-
+        exec_seq[seq_index++] = smallest;
         rt[smallest]--;
 
         if (rt[smallest] == 0) {
@@ -43,19 +42,49 @@ int main() {
         }
     }
 
-    printf("\nExecution Timeline:\n0 ");
-    for (i = 1; i < seq_index; i++) {
-        if (exec_seq[i] != exec_seq[i - 1]) {
-            printf("-> P%d -> %d ", exec_seq[i - 1], i);
+    // 🔷 GANTT CHART 🔷
+    printf("\nGantt Chart:\n");
+
+    // Top bar
+    printf(" ");
+    for (i = 0; i < seq_index; i++) {
+        if (i == 0 || exec_seq[i] != exec_seq[i - 1]) {
+            printf("----");
         }
     }
-    printf("-> P%d -> %d\n", exec_seq[seq_index - 1], seq_index);
+    printf("-\n|");
 
-    // Results
+    // Process sequence
+    for (i = 0; i < seq_index; i++) {
+        if (i == 0 || exec_seq[i] != exec_seq[i - 1]) {
+            printf("P%d |", exec_seq[i] + 1);
+        }
+    }
+
+    // Bottom bar
+    printf("\n ");
+    for (i = 0; i < seq_index; i++) {
+        if (i == 0 || exec_seq[i] != exec_seq[i - 1]) {
+            printf("----");
+        }
+    }
+    printf("-\n");
+
+    // Time stamps
+    int current_time = 0;
+    printf("0");
+    for (i = 1; i < seq_index; i++) {
+        if (exec_seq[i] != exec_seq[i - 1]) {
+            printf("%4d", i);
+        }
+    }
+    printf("%4d\n", seq_index);
+
+    // 🔶 Results Table 🔶
     printf("\nProcess\tArrival\tBurst\tCompleted\tTAT\tWT\n");
     for (i = 0; i < n; i++) {
-        int tat = ct[i] - at[i];     // Turnaround Time
-        int wt = tat - bt[i];        // Waiting Time
+        int tat = ct[i] - at[i];
+        int wt = tat - bt[i];
         turnaround_time += tat;
         wait_time += wt;
         printf("P%d\t%d\t%d\t%d\t\t%d\t%d\n", i + 1, at[i], bt[i], ct[i], tat, wt);
