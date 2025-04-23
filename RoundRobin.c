@@ -18,8 +18,9 @@ Average Turnaround Time: 6.33
 int main() {
     int bt[MAX], rt[MAX], at[MAX], wt[MAX], tat[MAX];
     int i, n, time = 0, remain, tq;
-    int flag = 0;
     float avg_wt = 0, avg_tat = 0;
+    int sequence[MAX * 10]; // Stores execution order
+    int seq_index = 0;
 
     printf("Enter the number of processes: ");
     scanf("%d", &n);
@@ -34,36 +35,47 @@ int main() {
     printf("Enter Time Quantum: ");
     scanf("%d", &tq);
 
-    printf("\nProcess\tTurnaround Time\tWaiting Time\n");
+    printf("\nExecution Sequence:\n");
 
-    int complete[MAX] = {0}; // Flag to track completed processes
+    int done[MAX] = {0};
 
     while (remain != 0) {
-        flag = 1;
+        int executed = 0;
         for (i = 0; i < n; i++) {
             if (at[i] <= time && rt[i] > 0) {
-                flag = 0;
+                executed = 1;
+
+                // Record process execution
+                sequence[seq_index++] = i + 1;
                 if (rt[i] <= tq) {
                     time += rt[i];
                     rt[i] = 0;
-                    complete[i] = 1;
-                } else {
-                    rt[i] -= tq;
-                    time += tq;
-                }
-
-                if (complete[i] && tat[i] == 0) {
                     tat[i] = time - at[i];
                     wt[i] = tat[i] - bt[i];
                     avg_wt += wt[i];
                     avg_tat += tat[i];
-                    printf("P%d\t%d\t\t%d\n", i + 1, tat[i], wt[i]);
                     remain--;
+                    done[i] = 1;
+                } else {
+                    rt[i] -= tq;
+                    time += tq;
                 }
             }
         }
 
-        if (flag) time++; // If no process was ready, advance time
+        if (!executed)
+            time++;
+    }
+
+    // Print execution order
+    for (i = 0; i < seq_index; i++) {
+        if (i != 0) printf(" -> ");
+        printf("P%d", sequence[i]);
+    }
+
+    printf("\n\nProcess\tTurnaround Time\tWaiting Time\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\n", i + 1, tat[i], wt[i]);
     }
 
     printf("\nAverage Waiting Time: %.2f", avg_wt / n);
